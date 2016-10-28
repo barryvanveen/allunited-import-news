@@ -1,0 +1,32 @@
+{
+  "name": "allunited-import-news",
+  "version": "0.0.1",
+  "description": "Import news into the AllUnited web module.",
+  "dependencies": {
+    "chimp": "^0.41.2",
+    "dotenv-safe": "^2.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "serve": "node -r dotenv/config ./node_modules/chimp/bin/chimp.js",
+    "serve-watch": "node -r dotenv/config ./node_modules/chimp/bin/chimp.js --watch"
+  },
+  "author": "Barry van Veen",
+  "license": "MIT",
+  "main": "/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barryvanveen/allunited-import-news.git"
+  },
+  "keywords": [
+    "allunited",
+    "import",
+    "news",
+    "chimp.io",
+    "cucumber.js"
+  ],
+  "bugs": {
+    "url": "https://github.com/barryvanveen/allunited-import-news/issues"
+  },
+  "homepage": "https://github.com/barryvanveen/allunited-import-news#readme"
+}
