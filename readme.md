@@ -5,12 +5,10 @@ Import news into the AllUnited web module.
 Copy `.env.example` and assign all available properties.
 
 ## Install
-`npm install`
+`composer install`
+`yarn install`
+`node_modules/selenium-standalone/bin/selenium-standalone install`
 
 ## Run
-`npm run serve` or `npm run serve-watch`
-
-## Sources
-* [https://chimp.readme.io/docs](https://chimp.readme.io/docs)
-* [http://webdriver.io/api/](http://webdriver.io/api/)
-* [https://github.com/rolodato/dotenv-safe](https://github.com/rolodato/dotenv-safe)
+`node_modules/selenium-standalone/bin/selenium-standalone start`
+`vendor/bin/codecept run`

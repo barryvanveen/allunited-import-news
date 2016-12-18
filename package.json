@@ -3,14 +3,10 @@
   "version": "0.0.1",
   "description": "Import news into the AllUnited web module.",
   "dependencies": {
-    "chimp": "^0.41.2",
-    "dotenv-safe": "^2.3.3"
+    "selenium-standalone": "^5.9.0"
   },
   "devDependencies": {},
-  "scripts": {
-    "serve": "node -r dotenv/config ./node_modules/chimp/bin/chimp.js",
-    "serve-watch": "node -r dotenv/config ./node_modules/chimp/bin/chimp.js --watch"
-  },
+  "scripts": {},
   "author": "Barry van Veen",
   "license": "MIT",
   "main": "/",

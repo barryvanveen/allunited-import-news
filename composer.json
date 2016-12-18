@@ -1,0 +1,17 @@
+{
+    "name": "barry/allunited-import-news",
+    "description": "Import news into the AllUnited web module.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Barry van Veen",
+            "email": "barryvanveen@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "codeception/codeception": "^2.2",
+        "vlucas/phpdotenv": "^2.4"
+    }
+}
