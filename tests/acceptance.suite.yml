@@ -12,5 +12,10 @@ modules:
             url: %SELENIUM_URL%
             browser: 'chrome'
         - \Helper\Acceptance
-        - Db
+        - \Helper\ExtendedDb
         - Asserts
+    config:
+        \Helper\ExtendedDb:
+            dsn: "mysql:host=%DB_HOST%:%DB_PORT%;dbname=%DB_DATABASE%"
+            user: "%DB_USERNAME%"
+            password: "%DB_PASSWORD%"
