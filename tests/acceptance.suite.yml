@@ -7,7 +7,7 @@
 class_name: AcceptanceTester
 modules:
     enabled:
-        - WebDriver:
+        - \Helper\ExtendedWebDriver:
             host: %SELENIUM_HOST%
             url: %SELENIUM_URL%
             browser: 'chrome'

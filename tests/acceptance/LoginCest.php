@@ -2,6 +2,8 @@
 
 class LoginCest
 {
+    protected $authors;
+
     public function login(AcceptanceTester $I)
     {
         $I->amOnUrl('https://pr01.allunited.nl');
@@ -24,9 +26,20 @@ class LoginCest
         $I->see('Artikelinfo', '#block6420');
     }
 
-    public function insertArticle(AcceptanceTester $I)
+    public function fillArticles(AcceptanceTester $I)
     {
-        $newsItem = $I->grabRowFromDatabase('la_news', ['id' => 2506]);
+        $this->insertArticle($I, 2505);
+    }
+
+    /**
+     * @param AcceptanceTester $I
+     * @param int $articleId
+     */
+    protected function insertArticle(AcceptanceTester $I, $articleId)
+    {
+        $this->getAuthorNameToUserIdCouplings();
+
+        $newsItem = $I->grabRowFromDatabase($_ENV['DB_TABLE'], ['id' => $articleId]);
 
         $I->fillField('input[name="article[datefrom]"]', $this->formatDatestring($newsItem['datum_begin']));
         $I->fillField('input[name="article[timefrom]"]', '00:00');
@@ -39,21 +52,33 @@ class LoginCest
         $I->executeJS('$("#id-6419-7742").attr("readonly", false)');
         $I->fillField('input[name="article[contactid]"]', $this->translateAuthorToUserId($newsItem['user']));
 
-        // todo: make findField a public mathod on custom WebDriver module
-
         $I->click('a#id-6419-6640_code');
+        $I->waitForElement('#mce_39_ifr', 5);
         $I->switchToIFrame($I->findField('#mce_39_ifr'));
+        $I->waitForElement('textarea#htmlSource', 5);
         $I->fillField('textarea#htmlSource', $this->formatEditorContent($newsItem['inleiding']));
         $I->click('Bijwerken');
+
+        $I->switchToIFrame();
 
         $I->scrollTo('#block6422');
 
         $I->click('a#id-6419-6643_code');
+        $I->waitForElement('#mce_41_ifr', 5);
         $I->switchToIFrame($I->findField('#mce_41_ifr'));
-        $I->fillField('textarea#htmlSource', $content = $this->formatEditorContent($newsItem['tekst']));
+        $I->waitForElement('textarea#htmlSource', 5);
+        $I->fillField('textarea#htmlSource', $this->formatEditorContent($newsItem['tekst']));
         $I->click('Bijwerken');
 
         $I->switchToIFrame();
+
+        $I->scrollTo('#block6644');
+
+        if (!empty($newsItem['img_url'])) {
+            $image_path = $this->downloadImage($newsItem['img_url']);
+
+            $I->attachFile($I->findField('input[type=file]'), $image_path);
+        }
 
         // todo: add image
         // todo: add link(s)
@@ -61,6 +86,19 @@ class LoginCest
         //$I->click("Bewaren");
 
         $I->wait(5);
+    }
+
+    protected function getAuthorNameToUserIdCouplings()
+    {
+        $raw = explode(',', $_ENV['AUTHOR_NAME_TO_USER_ID_COUPLING']);
+
+        $this->authors = [];
+
+        foreach($raw as $row) {
+            $tmp = explode('=', $row);
+
+            $this->authors[$tmp[0]] = $tmp[1];
+        }
     }
 
     /**
@@ -88,12 +126,11 @@ class LoginCest
      */
     protected function translateAuthorToUserId($user)
     {
-        // todo: write this function with some configuration file
-
-        switch($user) {
-            default:
-                throw new Exception("Unknown author $user! Please extend translateAuthorToUserId function.");
+        if (!isset($this->authors[$user])) {
+            throw new Exception("Unknown author $user! Please extend translateAuthorToUserId function.");
         }
+
+        return $this->authors[$user];
     }
 
     /**
@@ -105,6 +142,42 @@ class LoginCest
      */
     protected function formatEditorContent($content)
     {
-        return html_entity_decode($content);
+        $replacements = [];
+
+        for($i=123; $i<255; $i++) {
+            $replacements[chr($i)] = '&#'.$i.';';
+        }
+
+        $content = html_entity_decode($content);
+
+        $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+
+        codecept_debug($content);
+
+        return $content;
+    }
+
+    /**
+     * @param $img_url
+     *
+     * @return string
+     */
+    protected function downloadImage($img_url)
+    {
+        if (strpos($img_url, 'http://') === false && strpos($img_url, 'https://') === false) {
+            $img_url = 'http://www.leidenatletiek.nl/'.$img_url;
+        }
+
+        $filename  = '/images/' . basename($img_url);
+
+        $output = codecept_data_dir() . $filename;
+
+        if (file_exists($output)) {
+            return $output;
+        }
+
+        file_put_contents($output, file_get_contents($img_url));
+
+        return $filename;
     }
 }
