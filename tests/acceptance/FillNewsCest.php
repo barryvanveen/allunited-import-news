@@ -1,6 +1,6 @@
 <?php
 
-class FillArticlesCest
+class FillNewsCest
 {
 
     protected $authors;
@@ -20,12 +20,16 @@ class FillArticlesCest
         $I->see('Hulp nodig?', '#block12424');
     }
 
-    public function fillArticles(AcceptanceTester $I)
+    /**
+     * @param AcceptanceTester $I
+     */
+    public function fillNews(AcceptanceTester $I)
     {
         $articles = $I->grabRowsFromDatabase(
             $_ENV['DB_TABLE'],
             [
-                'id >=' => 2485,
+                'datum_begin >=' => '20160101',
+                'categ' => '6',
             ]
         );
 
@@ -34,8 +38,6 @@ class FillArticlesCest
                 codecept_debug("Einddatum verstreken, niet importeren.");
                 continue;
             }
-
-            // todo: switch between nieuws and mededelingen
 
             $this->goToAddNewsArticlePage($I);
 
