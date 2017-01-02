@@ -11,4 +11,5 @@ Copy `.env.example` and assign all available properties.
 
 ## Run
 `node_modules/selenium-standalone/bin/selenium-standalone start`
-`vendor/bin/codecept run`
+`vendor/bin/codecept run --group=news`
+`vendor/bin/codecept run --group=announcements`

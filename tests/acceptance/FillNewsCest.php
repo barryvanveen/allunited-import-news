@@ -5,6 +5,12 @@ class FillNewsCest
 
     protected $authors;
 
+    /**
+     * @group news
+     * @group announcements
+     *
+     * @param AcceptanceTester $I
+     */
     public function login(AcceptanceTester $I)
     {
         $I->amOnUrl('https://pr01.allunited.nl');
@@ -21,6 +27,8 @@ class FillNewsCest
     }
 
     /**
+     * @group news
+     *
      * @param AcceptanceTester $I
      */
     public function fillNews(AcceptanceTester $I)
@@ -45,9 +53,43 @@ class FillNewsCest
         }
     }
 
+    /**
+     * @group announcements
+     *
+     * @param AcceptanceTester $I
+     */
+    public function fillAnnouncements(AcceptanceTester $I)
+    {
+        $articles = $I->grabRowsFromDatabase(
+            $_ENV['DB_TABLE'],
+            [
+                'datum_begin >=' => '20160101',
+                'categ' => '1',
+            ]
+        );
+
+        foreach ($articles as $article) {
+            if (!empty($article['datum_eind']) && $this->dateInPast($article['datum_eind'])) {
+                codecept_debug("Einddatum verstreken, niet importeren.");
+                continue;
+            }
+
+            $this->goToAddAnnouncementsArticlePage($I);
+
+            $this->insertArticle($I, $article);
+        }
+    }
+
     protected function goToAddNewsArticlePage(AcceptanceTester $I)
     {
         $I->executeJS('sendForm("NULL", "cms_articles", "cmsarticle", "3", "", "where~page=\'Nieuws\'");');
+
+        $I->see('Artikelinfo', '#block6420');
+    }
+
+    protected function goToAddAnnouncementsArticlePage(AcceptanceTester $I)
+    {
+        $I->executeJS('sendForm("NULL", "cms_articles", "cmsarticle", "3", "", "where~page=\'Mededelingen\'");');
 
         $I->see('Artikelinfo', '#block6420');
     }
