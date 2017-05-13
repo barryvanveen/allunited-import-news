@@ -36,7 +36,7 @@ class FillNewsCest
         $articles = $I->grabRowsFromDatabase(
             $_ENV['DB_TABLE'],
             [
-                'datum_begin >=' => '20160101',
+                'datum_begin >=' => '20170115',
                 'categ' => '6',
             ]
         );
@@ -63,7 +63,8 @@ class FillNewsCest
         $articles = $I->grabRowsFromDatabase(
             $_ENV['DB_TABLE'],
             [
-                'datum_begin >=' => '20160101',
+                'datum_begin >=' => '20161212',
+                'id >' => '2504',
                 'categ' => '1',
             ]
         );
@@ -119,26 +120,20 @@ class FillNewsCest
 
         if (!empty($article['inleiding'])) {
             $I->scrollTo('#block6421');
-
-            $I->click('a#id-6419-6640_code');
-            $I->waitForElement('#mce_39_ifr', 5);
-            $I->switchToIFrame($I->findField('#mce_39_ifr'));
-            $I->waitForElement('textarea#htmlSource', 5);
-            $I->fillField('textarea#htmlSource', $this->formatEditorContent($article['inleiding']));
-            $I->click('Bijwerken');
-
-            $I->switchToIFrame();
+            $I->click('#mceu_17 button');
+            $I->waitForElement('textarea#mceu_80', 5);
+            $I->fillField('textarea#mceu_80', $this->formatEditorContent($article['inleiding']));
+            $I->click('Oké', '#mceu_78');
         }
 
         if (!empty($article['tekst'])) {
             $I->scrollTo('#block6422');
 
-            $iframeId = empty($article['inleiding']) ? '#mce_39_ifr' : '#mce_41_ifr';
+            $popupId = empty($article['inleiding']) ? '#mceu_78' : '#mceu_85';
+            $textareaId = empty($article['inleiding']) ? '#mceu_80' : '#mceu_87';
 
-            $I->click('a#id-6419-6643_code');
-            $I->waitForElement($iframeId, 5);
-            $I->switchToIFrame($I->findField($iframeId));
-            $I->waitForElement('textarea#htmlSource', 5);
+            $I->click('#mceu_57 button');
+            $I->waitForElement('textarea'.$textareaId, 5);
 
             $tekst = $article['tekst'];
 
@@ -162,10 +157,8 @@ class FillNewsCest
                 }
             }
 
-            $I->fillField('textarea#htmlSource', $this->formatEditorContent($tekst));
-            $I->click('Bijwerken');
-
-            $I->switchToIFrame();
+            $I->fillField('textarea'.$textareaId, $this->formatEditorContent($tekst));
+            $I->click('Oké', $popupId);
         }
 
         if (!empty($article['img_url'])) {
